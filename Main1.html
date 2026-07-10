@@ -1,0 +1,903 @@
+ <!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAMPALA FIX - Find Local Services</title>
+  <meta property="og:title" content="KAMPALA-FIX">
+  <meta property="og:description" content="Find trusted plumbers, electricians & more in Kampala">
+  <meta property="og:image" content="logo.png">
+  <style>
+    :root {
+      --primary: #0ac5e6;
+      --secondary: #13236d;
+      --accent: #07e6db;
+      --bg-dark: #000;
+      --text-light: #ffffff;
+      --card-bg: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.12);
+      --radius-lg: 24px;
+      --radius-sm: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-dark: #f5f5f5;
+      --text-light: #111;
+      --card-bg: rgba(255,255,255,0.8);
+      --card-border: rgba(0,0,0,0.08);
+      --shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body{
+      color: var(--text-light);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 15% 25%, rgba(10, 197, 230, 0.4) 0px, transparent 50%),
+        radial-gradient(at 85% 15%, rgba(7, 230, 219, 0.35) 0px, transparent 50%),
+        radial-gradient(at 35% 85%, rgba(139, 92, 246, 0.3) 0px, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(10, 197, 230, 0.25) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-size: 16px;
+      min-height: 100vh;
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* NAV BAR */
+    .main-nav {
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 1rem 1.5rem;
+    }
+
+    :root[data-theme="light"] .main-nav {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-brand {
+      font-weight: 800;
+      font-size: clamp(1.3rem, 4vw, 1.75rem);
+      letter-spacing: -0.5px;
+      color: var(--text-light);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+    }
+
+    :root[data-theme="light"] .nav-links a {
+      color: rgba(0,0,0,0.7);
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* DROPDOWN */
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0;
+      min-width: 220px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+      z-index: 1001;
+    }
+
+    :root[data-theme="light"] .dropdown-menu {
+      background: rgba(255,255,255,0.95);
+    }
+
+    .dropdown-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: none !important;
+    }
+
+    :root[data-theme="light"] .dropdown-menu a {
+      color: rgba(0,0,0,0.8);
+    }
+
+    .dropdown-menu a:hover {
+      background: rgba(10,197,230,0.2);
+      color: var(--primary);
+      padding-left: 1.5rem;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 0.5rem 0;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(10, 197, 230, 0.2);
+      border-color: var(--primary);
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    button, .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    /* PREMIUM SIGN UP BUTTON */
+    .btn-primary {
+      background: linear-gradient(135deg, #0ac5e6 0%, #06b6d4 50%, #0891b2 100%);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 20px rgba(10, 197, 230, 0.45), 
+                  inset 0 1px 0 rgba(255,255,255,0.25);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      animation: pulse-ring 2s infinite;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%);
+      transform: rotate(45deg) translateX(-100%);
+      transition: transform 0.7s ease;
+    }
+
+    .btn-primary:hover {
+      animation: none;
+      background: linear-gradient(135deg, #22d3ee 0%, #0ac5e6 50%, #0891b2 100%);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 35px rgba(7, 230, 219, 0.6);
+    }
+
+    .btn-primary:hover::before {
+      transform: rotate(45deg) translateX(100%);
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 4px 20px rgba(10, 197, 230, 0.45), 0 0 0 0 rgba(10, 197, 230, 0.7); }
+      70% { box-shadow: 0 4px 20px rgba(10, 197, 230, 0.45), 0 0 0 10px rgba(10, 197, 230, 0); }
+      100% { box-shadow: 0 4px 20px rgba(10, 197, 230, 0.45), 0 0 0 0 rgba(10, 197, 230, 0); }
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(10, 197, 230, 0.2);
+      border-color: var(--primary);
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 250px;
+      border: 2px solid var(--card-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      color: var(--text-light);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+
+    :root[data-theme="light"] input::placeholder {
+      color: rgba(0,0,0,0.5);
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: var(--card-bg);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      transition: all 0.2s ease;
+    }
+
+    .tag.active, .tag:hover {
+      background: var(--primary);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    /* AURORA BORDER CARDS */
+    .profile-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      border: 1px solid transparent;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      margin: -2px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #0ac5e6, #07e6db, #8b5cf6, #0ac5e6);
+      background-size: 300% 300%;
+      animation: aurora 8s ease infinite;
+    }
+
+    @keyframes aurora {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .profile-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(7, 230, 219, 0.3);
+    }
+
+    .profile-card.hidden {
+      display: none;
+    }
+
+    .card-fav {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--card-border);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .card-fav.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .card-fav:hover {
+      transform: scale(1.1);
+    }
+
+    .profile-card img {
+      height: 80px;
+      width: 80px;
+      border-radius: 50%;
+      background-color: white;
+      border: 3px solid var(--accent);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info strong {
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .price-badge {
+      display: inline-block;
+      background: rgba(7, 230, 219, 0.2);
+      color: var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+    }
+
+    .verified-badge {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-left: 0.3rem;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      grid-column: 1 / -1;
+      color: rgba(255,255,255,0.7);
+    }
+
+    :root[data-theme="light"] .no-results {
+      color: rgba(0,0,0,0.7);
+    }
+
+    /* BOOKING MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        display: none;
+        align-items: flex-start;
+      }
+      :root[data-theme="light"] .nav-links {
+        background: rgba(255,255,255,0.95);
+      }
+      .nav-links.show { display: flex; }
+      .hamburger { display: block; }
+      .dropdown-menu {
+        position: static;
+        background: var(--card-bg);
+        border: none;
+        box-shadow: none;
+        margin-top: 0.5rem;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+      }
+      .dropdown-menu.show {
+        display: block;
+      }
+      .container { padding: 1.5rem 1rem; }
+      .profile-card { flex-direction: column; text-align: center; }
+      .search-bar { flex-direction: column; }
+      input { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV BAR -->
+  <nav class="main-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="nav-brand">KAMPALA-FIX</div>
+        <div class="nav-links" id="navLinks">
+          <a href="#" class="active" id="homeBtn">Home</a>
+          <a href="wawo.html">About</a>
+          <a href="#" id="communityBtn">Community</a>
+          
+          <div class="nav-dropdown">
+            <a href="#" id="moreBtn">More ▾</a>
+            <div class="dropdown-menu" id="moreDropdown">
+              <a href="#" data-filter="painter">🎨 Painters</a>
+              <a href="#" data-filter="carpenter">🔨 Carpenters</a>
+              <a href="#" data-filter="cleaner">🧹 Cleaners</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" id="favoritesBtn">♥ My Favorites</a>
+              <a href="#" id="settingsBtn">⚙️ Settings</a>
+              <a href="#" id="helpBtn">❓ Help</a>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <div class="nav-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+        <a href="register.html" class="btn btn-primary" id="signUpBtn">
+          <span>👤</span> SIGN UP
+        </a>
+        <button class="hamburger" id="hamburger">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search plumbers, electricians...">
+      <button type="button" class="btn btn-primary" id="searchBtn">SEARCH</button>
+    </div>
+
+    <div class="filter-tags" id="filterTags">
+      <span class="tag active" data-filter="all">All</span>
+      <span class="tag" data-filter="plumber">Plumbers</span>
+      <span class="tag" data-filter="electrician">Electricians</span>
+      <span class="tag" data-filter="kampala">Kampala</span>
+      <span class="tag" data-filter="ntinda">Ntinda</span>
+      <span class="tag" data-filter="available">Available Today</span>
+    </div>
+
+    <main class="profiles-grid" id="profilesGrid">
+      <article class="profile-card" data-id="1" data-category="plumber" data-location="kampala" data-available="true">
+        <button class="card-fav" data-id="1">♡</button>
+        <img src="Plumber.jpg" alt="Peter Plumbing">
+        <div class="profile-info">
+          <strong>PETER PLUMBING SERVICES <span class="verified-badge">✓</span></strong>
+          <p>LOCATION: KAMPALA</p>
+          <p>RATING: ★★★★☆ (24 reviews)</p>
+          <span class="price-badge">From UGX 30,000</span>
+          <div class="profile-actions">
+            <a href="tel:+256745122" class="btn btn-secondary">Call</a>
+            <a href="https://wa.me/256745121022?text=Hi, I found you on KAMPALA-FIX" class="btn btn-secondary" target="_blank">WhatsApp</a>
+            <button class="btn btn-primary book-btn" data-provider="PETER PLUMBING SERVICES">Book Now</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="profile-card" data-id="2" data-category="electrician" data-location="ntinda" data-available="true">
+        <button class="card-fav" data-id="2">♡</button>
+        <img src="Electrician.jpg" alt="Mukibi Electronics">
+        <div class="profile-info">
+          <strong>MUKIBI ELECTRONICS <span class="verified-badge">✓</span></strong>
+          <p>LOCATION: NTINDA</p>
+          <p>RATING: ★★★★★ (51 reviews)</p>
+          <span class="price-badge">From UGX 45,000</span>
+          <div class="profile-actions">
+            <a href="tel:+256121022" class="btn btn-secondary">Call</a>
+            <a href="https://wa.me/256745121022?text=Hi, I found you on KAMPALA-FIX" class="btn btn-secondary" target="_blank">WhatsApp</a>
+            <button class="btn btn-primary book-btn" data-provider="MUKIBI ELECTRONICS">Book Now</button>
+          </div>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <!-- BOOKING MODAL -->
+  <div class="modal" id="bookingModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Book Service</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <form id="bookingForm">
+        <div class="form-group">
+          <label>Provider</label>
+          <input type="text" id="providerName" readonly>
+        </div>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="customerName" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="customerPhone" required placeholder="+256...">
+        </div>
+        <div class="form-group">
+          <label>Service Date</label>
+          <input type="date" id="serviceDate" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="serviceDesc" required placeholder="e.g. Leaking kitchen tap">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Confirm Booking</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // THEME TOGGLE
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    themeToggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    // HAMBURGER MENU
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('show');
+    });
+
+    document.querySelectorAll('.nav-links > a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('show');
+      });
+    });
+
+    // DROPDOWN
+    const moreBtn = document.getElementById('moreBtn');
+    const moreDropdown = document.getElementById('moreDropdown');
+
+    moreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      moreDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+        moreDropdown.classList.remove('show');
+      }
+    });
+
+    // FAVORITES
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    
+    function updateFavButtons() {
+      document.querySelectorAll('.card-fav').forEach(btn => {
+        const id = btn.dataset.id;
+        if (favorites.includes(id)) {
+          btn.classList.add('active');
+          btn.textContent = '♥';
+        } else {
+          btn.classList.remove('active');
+          btn.textContent = '♡';
+        }
+      });
+    }
+
+    document.querySelectorAll('.card-fav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        if (favorites.includes(id)) {
+          favorites = favorites.filter(f => f !== id);
+        } else {
+          favorites.push(id);
+        }
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        updateFavButtons();
+      });
+    });
+
+    updateFavButtons();
+
+    // FILTERS & SEARCH
+    const searchInput = document.getElementById('search');
+    const searchBtn = document.getElementById('searchBtn');
+    const profilesGrid = document.getElementById('profilesGrid');
+    const profileCards = document.querySelectorAll('.profile-card');
+    const filterTags = document.querySelectorAll('.tag');
+    
+    let currentFilter = 'all';
+
+    function filterProfiles() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      profileCards.forEach(card => {
+        const name = card.querySelector('strong').textContent.toLowerCase();
+        const location = card.dataset.location;
+        const category = card.dataset.category;
+        const available = card.dataset.available;
+        
+        const matchesSearch = name.includes(searchTerm) || location.includes(searchTerm);
+        const matchesFilter = currentFilter === 'all' || 
+                            category === currentFilter || 
+                            location === currentFilter ||
+                            (currentFilter === 'available' && available === 'true');
+
+        if (matchesSearch && matchesFilter) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      let noResults = document.querySelector('.no-results');
+      if (visibleCount === 0) {
+        if (!noResults) {
+          noResults = document.createElement('div');
+          noResults.className = 'no-results';
+          noResults.textContent = 'No services found. Try a different search.';
+          profilesGrid.appendChild(noResults);
+        }
+      } else if (noResults) {
+        noResults.remove();
+      }
+    }
+
+    searchBtn.addEventListener('click', filterProfiles);
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterProfiles();
+    });
+    searchInput.addEventListener('input', filterProfiles);
+
+    filterTags.forEach(tag => {
+      tag.addEventListener('click', () => {
+        filterTags.forEach(t => t.classList.remove('active'));
+        tag.classList.add('active');
+        currentFilter = tag.dataset.filter;
+        filterProfiles();
+      });
+    });
+
+    // BOOKING MODAL
+    const bookingModal = document.getElementById('bookingModal');
+    const closeModal = document.getElementById('closeModal');
+    const bookingForm = document.getElementById('bookingForm');
+
+    document.querySelectorAll('.book-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('providerName').value = btn.dataset.provider;
+        bookingModal.classList.add('show');
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      bookingModal.classList.remove('show');
+    });
+
+    bookingModal.addEventListener('click', (e) => {
+      if (e.target === bookingModal) {
+        bookingModal.classList.remove('show');
+      }
+    });
+
+    bookingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        provider: document.getElementById('providerName').value,
+        name: document.getElementById('customerName').value,
+        phone: document.getElementById('customerPhone').value,
+        date: document.getElementById('serviceDate').value,
+        desc: document.getElementById('serviceDesc').value
+      };
+      console.log('Booking:', data);
+      alert(`Booking confirmed for ${data.provider} on ${data.date}! They will contact you at ${data.phone}.`);
+      bookingModal.classList.remove('show');
+      bookingForm.reset();
+    });
+
+    // NAV HANDLERS
+    document.getElementById('homeBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      searchInput.value = '';
+      currentFilter = 'all';
+      filterTags.forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-filter="all"]').classList.add('active');
+      filterProfiles();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('communityBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Community feature coming soon! Connect with other users and share reviews.');
+    });
+
+    document.getElementById('favoritesBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert(`You have ${favorites.length} saved services. Feature coming soon!`);
+    });
+
+    document.getElementById('settingsBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Settings: Profile, Notifications, Privacy - coming soon.');
+    });
+
+    document.getElementById('helpBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Help Center - Contact us at support@kampalafix.com');
+    });
+
+    document.getElementById('signUpBtn')?.addEventListener('click', (e) => {
+      console.log('Sign up clicked');
+    });
+
+    // ANALYTICS
+    document.querySelectorAll('.profile-card .btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const serviceName = e.target.closest('.profile-card').querySelector('strong').textContent;
+        const action = e.target.textContent.trim();
+        console.log(`User clicked ${action} for ${serviceName}`);
+      });
+    });
+  </script>
+</body>
+</html>
